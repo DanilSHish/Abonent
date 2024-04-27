@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="TestDB" uuid="059d480d-21e7-4209-a812-b5afc6040eaa">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/../WpfApp2/DataBase/identifier.sqlite</jdbc-url>
+      <working-dir>D:\C# Projects\WpfApp2\TestDB</working-dir>
+    </data-source>
+  </component>
+</project>
