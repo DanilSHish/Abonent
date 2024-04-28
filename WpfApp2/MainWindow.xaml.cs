@@ -22,13 +22,10 @@ namespace WpfApp2
     public partial class MainWindow : Window
     {
         Model mod = new Model();
-        private string connectionString = @"Data Source=D:\\C# Projects\\WpfApp2\\WpfApp2\\DataBase\\identifier.sqlite;";
-        private SqliteConnection connection;
 
         public MainWindow()
         {
             InitializeComponent();
-            connection = new SqliteConnection(connectionString);
             dataGrid.ItemsSource = mod.LoadData();
         }
 

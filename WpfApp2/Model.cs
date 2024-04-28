@@ -17,89 +17,109 @@ namespace WpfApp2
     {
         private string connectionString = @"Data Source=..\\..\\DataBase\\identifier.sqlite;";
         private SqliteConnection connection;
-        
+        public class Abonent
+        {
+            public string surname { get; set; }
+            public string name { get; set; }
+            public string patronimic { get; set; }
+            public string street { get; set; }
+            public int house { get; set; }
+            public string homeNumber { get; set; }
+            public string workNumber { get; set; }
+            public string mobileNumber { get; set; }
+        }
+
+        public class Street
+        {
+            public string StreetName { get; set; }
+            public int NumberOfResidents { get; set; }
+        }
+
         public IEnumerable<Abonent> LoadData()
         {
-            connection = new SqliteConnection(connectionString);
-            try
-            {
-                
-                string query = @"
-                SELECT
-                    A.surname,
-                    A.name,
-                    A.patronimic,
-                    Ad.street,
-                    Ad.house,
-                    Ph.homeNumber,
-                    Ph.workNumber,
-                    Ph.mobileNumber
-                FROM Abonent A
-                INNER JOIN Address Ad ON A.id = Ad.abonent_id
-                INNER JOIN PhoneNumber Ph ON A.id = Ph.abonent_id";
+            
+                try
+                {
+                using (connection = new SqliteConnection(connectionString))
+                {
+                    string query = @"
+                    SELECT
+                        A.surname,
+                        A.name,
+                        A.patronimic,
+                        Ad.street,
+                        Ad.house,
+                        Ph.homeNumber,
+                        Ph.workNumber,
+                        Ph.mobileNumber
+                    FROM Abonent A
+                    INNER JOIN Address Ad ON A.id = Ad.abonent_id
+                    INNER JOIN PhoneNumber Ph ON A.id = Ph.abonent_id";
 
-                IEnumerable<Abonent> abonents = connection.Query<Abonent>(query);
-                return abonents;
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"Произошла ошибка: {ex.Message}");
-            }
+                    IEnumerable<Abonent> abonents = connection.Query<Abonent>(query);
+                    return abonents;
+                }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Произошла ошибка: {ex.Message}");
+                }
             return null;
         }
 
         public IEnumerable<Street> LoadStreets()
         {
-            connection = new SqliteConnection(connectionString);
-            string query = @"
+            using (connection = new SqliteConnection(connectionString))
+            {
+                string query = @"
                     SELECT Streets.street_name AS StreetName,
                     COUNT(Address.abonent_id) AS NumberOfResidents
                     FROM Streets
                     INNER JOIN Address ON Streets.street_name = Address.street
                     GROUP BY Streets.street_name";
-            IEnumerable<Street> str = connection.Query<Street>(query);
-            return str;
+                IEnumerable<Street> str = connection.Query<Street>(query);
+                return str;
+            }
         }
 
        public IEnumerable<Abonent> Search(string phoneNumber)
         {
-            
             try
             {
-                connection = new SqliteConnection(connectionString);
+                using (connection = new SqliteConnection(connectionString))
+                {
                     string query = @"
-                SELECT
-                    A.surname,
-                    A.name,
-                    A.patronimic,
-                    Ad.street,
-                    Ad.house,
-                    Ph.homeNumber,
-                    Ph.workNumber,
-                    Ph.mobileNumber
-                FROM Abonent A
-                INNER JOIN Address Ad ON A.id = Ad.abonent_id
-                INNER JOIN PhoneNumber Ph ON A.id = Ph.abonent_id
-                WHERE Ph.homeNumber = @PhoneNumber OR
-                     Ph.workNumber = @PhoneNumber OR
-                     Ph.mobileNumber = @PhoneNumber";
+                    SELECT
+                        A.surname,
+                        A.name,
+                        A.patronimic,
+                        Ad.street,
+                        Ad.house,
+                        Ph.homeNumber,
+                        Ph.workNumber,
+                        Ph.mobileNumber
+                    FROM Abonent A
+                    INNER JOIN Address Ad ON A.id = Ad.abonent_id
+                    INNER JOIN PhoneNumber Ph ON A.id = Ph.abonent_id
+                    WHERE Ph.homeNumber = @PhoneNumber OR
+                         Ph.workNumber = @PhoneNumber OR
+                         Ph.mobileNumber = @PhoneNumber";
 
-                IEnumerable<Abonent> Phone = connection.Query<Abonent>(query, new { PhoneNumber = phoneNumber });
-                return Phone;
+                    IEnumerable<Abonent> Phone = connection.Query<Abonent>(query, new { PhoneNumber = phoneNumber });
+                    return Phone;
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Произошла ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
             return null;
         }
 
         public bool uploadCSVFile(ItemCollection dataItem)
         {
-
             DateTime thisMoment = DateTime.Now;
-            string fileCSV = "..\\..\\report\\report_" + thisMoment.ToString("ddMMyyyy_HHmm") + ".csv";
+            string fileCSV = Path.Combine("..\\..\\report\\report_" + thisMoment.ToString("ddMMyyyy_HHmm") + ".csv");
 
             try
             {
@@ -142,24 +162,5 @@ namespace WpfApp2
                 return false;
             }
         }
-
-        public class Abonent
-        {
-            public string surname { get; set; }
-            public string name { get; set; }
-            public string patronimic { get; set; }
-            public string street { get; set; }
-            public int house { get; set; }
-            public string homeNumber { get; set; }
-            public string workNumber { get; set; }
-            public string mobileNumber { get; set; }
-        }
-
-        public class Street
-        {
-            public string StreetName { get; set; }
-            public int NumberOfResidents { get; set; }
-        }
-
     }
 }
